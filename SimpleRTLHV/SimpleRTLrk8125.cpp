@@ -499,6 +499,8 @@ bool ethtool_convert_link_mode_to_legacy_u32(u32 *legacy_u32,
 
 #endif //LINUX_VERSION_CODE < KERNEL_VERSION(3,3,0)
 
+#if DISABLED_CODE
+
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3,4,0)
 static inline void eth_hw_addr_random(struct net_device *dev)
 {
@@ -3166,6 +3168,8 @@ static void rtl8125_proc_remove(struct net_device *dev)
 
 #endif //ENABLE_R8125_PROCFS
 
+#endif  /* DISABLED_CODE */
+
 #ifdef ENABLE_R8125_SYSFS
 /****************************************************************************
 *   -----------------------------SYSFS STUFF-------------------------
@@ -3771,6 +3775,8 @@ static int _rtl8125_check_dash(struct rtl8125_private *tp)
         return 0;
 }
 
+#if DISABLED_CODE
+
 static int rtl8125_check_dash(struct rtl8125_private *tp)
 {
         if (HW_DASH_SUPPORT_DASH(tp) && _rtl8125_check_dash(tp)) {
@@ -3941,6 +3947,8 @@ static void rtl8125_driver_stop(struct rtl8125_private *tp)
         rtl8125_wait_dash_fw_ready(tp);
 }
 
+#endif /* DISABLED_CODE */
+
 void rtl8125_ephy_write(struct rtl8125_private *tp, int RegAddr, int value)
 {
         int i;
@@ -4102,6 +4110,8 @@ rtl8125_csi_write(struct rtl8125_private *tp,
         rtl8125_csi_other_fun_write(tp, multi_fun_sel_bit, addr, value);
 }
 
+#if DISABLED_CODE
+
 static u8
 rtl8125_csi_fun0_read_byte(struct rtl8125_private *tp,
                            u32 addr)
@@ -4153,6 +4163,8 @@ rtl8125_csi_fun0_write_byte(struct rtl8125_private *tp,
 
         fsleep(R8125_CHANNEL_EXIT_DELAY_TIME);
 }
+
+#endif /* DISABLED_CODE */
 
 u32 rtl8125_eri_read_with_oob_base_address(struct rtl8125_private *tp, int addr, int len, int type, const u32 base_address)
 {
@@ -4419,6 +4431,8 @@ rtl8125_wait_txrx_fifo_empty(struct net_device *dev)
         }
 }
 
+#if DISABLED_CODE
+
 #ifdef ENABLE_DASH_SUPPORT
 
 static inline void
@@ -4594,6 +4608,8 @@ rtl8125_disable_rx_packet_filter(struct rtl8125_private *tp)
                   AcceptMyPhys |  AcceptAllPhys));
 }
 
+#endif /* DISABLED_CODE */
+
 static void
 rtl8125_nic_reset(struct net_device *dev)
 {
@@ -4624,6 +4640,8 @@ rtl8125_nic_reset(struct net_device *dev)
         RTL_W32(tp, RxConfig, (RX_DMA_BURST_512 << RxCfgDMAShift));
 }
 
+#if DISABLED_CODE
+
 static void
 rtl8125_hw_set_interrupt_type(struct rtl8125_private *tp, u8 isr_ver)
 {
@@ -4651,6 +4669,8 @@ rtl8125_hw_set_interrupt_type(struct rtl8125_private *tp, u8 isr_ver)
 
         RTL_W8(tp, INT_CFG0_8125, tmp);
 }
+
+#endif /* DISABLED_CODE */
 
 static void
 rtl8125_hw_clear_timer_int(struct net_device *dev)
