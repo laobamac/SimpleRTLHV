@@ -3298,6 +3298,15 @@ void mdio_real_direct_write_phy_ocp(struct rtl8125_private *tp,
     }
 }
 
+void mdio_direct_write_phy_ocp(struct rtl8125_private *tp,
+                                      u16 RegAddr,
+                                      u16 value)
+{
+    if (tp->rtk_enable_diag) return;
+    
+    mdio_real_direct_write_phy_ocp(tp, RegAddr, value);
+}
+
 static void rtl8125_mdio_direct_write_phy_ocp(struct rtl8125_private *tp,
                 u16 RegAddr,
                 u16 value)
@@ -3414,6 +3423,14 @@ static u32 rtl8125_mdio_read_phy_ocp(struct rtl8125_private *tp,
         return rtl8125_mdio_direct_read_phy_ocp(tp, ocp_addr);
 }
 */
+
+u32 mdio_direct_read_phy_ocp(struct rtl8125_private *tp,
+                                    u16 RegAddr)
+{
+    if (tp->rtk_enable_diag) return 0xffffffff;
+    
+    return mdio_real_direct_read_phy_ocp(tp, RegAddr);
+}
 
 static u32 rtl8125_mdio_real_read_phy_ocp(struct rtl8125_private *tp,
                 u16 PageNum,
@@ -14289,6 +14306,21 @@ rtl8125_netpoll(struct net_device *dev)
 
 #endif /* DISABLED_CODE */
 
+void
+rtl8125_get_bios_setting(struct net_device *dev)
+{
+    struct rtl8125_private *tp = netdev_priv(dev);
+    
+    switch (tp->mcfg) {
+        case CFG_METHOD_2:
+        case CFG_METHOD_3:
+        case CFG_METHOD_4:
+        case CFG_METHOD_5:
+            tp->bios_setting = RTL_R32(tp, TimeInt2);
+            break;
+    }
+}
+
 #if DISABLED_CODE
 
 static void
@@ -15002,6 +15034,19 @@ rtl8125_set_mac_address(struct net_device *dev,
 
 #endif  /* DISABLED_CODE */
 
+void
+set_offset70F(struct rtl8125_private *tp, u8 setting)
+{
+    u32 csi_tmp;
+    u32 temp = (u32)setting;
+    temp = temp << 24;
+    /*set PCI configuration space offset 0x70F to setting*/
+    /*When the register offset of PCI configuration space larger than 0xff, use CSI to access it.*/
+    
+    csi_tmp = rtl8125_csi_read(tp, 0x70c) & 0x00ffffff;
+    rtl8125_csi_write(tp, 0x70c, csi_tmp | temp);
+}
+
 /******************************************************************************
  * rtl8125_rar_set - Puts an ethernet address into a receive address register.
  *
@@ -15010,24 +15055,24 @@ rtl8125_set_mac_address(struct net_device *dev,
  *****************************************************************************/
 void
 rtl8125_rar_set(struct rtl8125_private *tp,
-                const u8 *addr)
+                uint8_t *addr)
 {
-        uint32_t rar_low = 0;
-        uint32_t rar_high = 0;
-
-        rar_low = ((uint32_t) addr[0] |
-                   ((uint32_t) addr[1] << 8) |
-                   ((uint32_t) addr[2] << 16) |
-                   ((uint32_t) addr[3] << 24));
-
-        rar_high = ((uint32_t) addr[4] |
-                    ((uint32_t) addr[5] << 8));
-
-        rtl8125_enable_cfg9346_write(tp);
-        RTL_W32(tp, MAC0, rar_low);
-        RTL_W32(tp, MAC4, rar_high);
-
-        rtl8125_disable_cfg9346_write(tp);
+    uint32_t rar_low = 0;
+    uint32_t rar_high = 0;
+    
+    rar_low = ((uint32_t) addr[0] |
+               ((uint32_t) addr[1] << 8) |
+               ((uint32_t) addr[2] << 16) |
+               ((uint32_t) addr[3] << 24));
+    
+    rar_high = ((uint32_t) addr[4] |
+                ((uint32_t) addr[5] << 8));
+    
+    rtl8125_enable_cfg9346_write(tp);
+    RTL_W32(tp, MAC0, rar_low);
+    RTL_W32(tp, MAC4, rar_high);
+    
+    rtl8125_disable_cfg9346_write(tp);
 }
 
 #if DISABLED_CODE
