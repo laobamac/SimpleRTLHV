@@ -3275,28 +3275,29 @@ static inline u16 map_phy_ocp_addr(u16 PageNum, u8 RegNum)
         return OcpPhyAddress;
 }
 
-static void mdio_real_direct_write_phy_ocp(struct rtl8125_private *tp,
-                u16 RegAddr,
-                u16 value)
+void mdio_real_direct_write_phy_ocp(struct rtl8125_private *tp,
+                                           u16 RegAddr,
+                                           u16 value)
 {
-        u32 data32;
-        int i;
-
+    u32 data32;
+    int i;
+    
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,18)
-        WARN_ON_ONCE(RegAddr % 2);
+    WARN_ON_ONCE(RegAddr % 2);
 #endif
-        data32 = RegAddr/2;
-        data32 <<= OCPR_Addr_Reg_shift;
-        data32 |= OCPR_Write | value;
-
-        RTL_W32(tp, PHYOCP, data32);
-        for (i = 0; i < R8125_CHANNEL_WAIT_COUNT; i++) {
-                fsleep(R8125_CHANNEL_WAIT_TIME);
-
-                if (!(RTL_R32(tp, PHYOCP) & OCPR_Flag))
-                        break;
-        }
+    data32 = RegAddr/2;
+    data32 <<= OCPR_Addr_Reg_shift;
+    data32 |= OCPR_Write | value;
+    
+    RTL_W32(tp, PHYOCP, data32);
+    for (i = 0; i < 100; i++) {
+        udelay(1);
+        
+        if (!(RTL_R32(tp, PHYOCP) & OCPR_Flag))
+            break;
+    }
 }
+
 
 static void rtl8125_mdio_direct_write_phy_ocp(struct rtl8125_private *tp,
                 u16 RegAddr,
@@ -3370,28 +3371,29 @@ void rtl8125_mdio_prot_direct_write_phy_ocp(struct rtl8125_private *tp,
 }
 
 static u32 mdio_real_direct_read_phy_ocp(struct rtl8125_private *tp,
-                u16 RegAddr)
+                                         u16 RegAddr)
 {
-        u32 data32;
-        int i, value = 0;
-
+    u32 data32;
+    int i, value = 0;
+    
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,18)
-        WARN_ON_ONCE(RegAddr % 2);
+    WARN_ON_ONCE(RegAddr % 2);
 #endif
-        data32 = RegAddr/2;
-        data32 <<= OCPR_Addr_Reg_shift;
-
-        RTL_W32(tp, PHYOCP, data32);
-        for (i = 0; i < R8125_CHANNEL_WAIT_COUNT; i++) {
-                fsleep(R8125_CHANNEL_WAIT_TIME);
-
-                if (RTL_R32(tp, PHYOCP) & OCPR_Flag)
-                        break;
-        }
-        value = RTL_R32(tp, PHYOCP) & OCPDR_Data_Mask;
-
-        return value;
+    data32 = RegAddr/2;
+    data32 <<= OCPR_Addr_Reg_shift;
+    
+    RTL_W32(tp, PHYOCP, data32);
+    for (i = 0; i < 100; i++) {
+        udelay(1);
+        
+        if (RTL_R32(tp, PHYOCP) & OCPR_Flag)
+            break;
+    }
+    value = RTL_R32(tp, PHYOCP) & OCPDR_Data_Mask;
+    
+    return value;
 }
+
 
 static u32 rtl8125_mdio_direct_read_phy_ocp(struct rtl8125_private *tp,
                 u16 RegAddr)
@@ -3951,45 +3953,45 @@ static void rtl8125_driver_stop(struct rtl8125_private *tp)
 
 void rtl8125_ephy_write(struct rtl8125_private *tp, int RegAddr, int value)
 {
-        int i;
-
-        RTL_W32(tp, EPHYAR,
-                EPHYAR_Write |
-                (RegAddr & EPHYAR_Reg_Mask_v2) << EPHYAR_Reg_shift |
-                (value & EPHYAR_Data_Mask));
-
-        for (i = 0; i < R8125_CHANNEL_WAIT_COUNT; i++) {
-                fsleep(R8125_CHANNEL_WAIT_TIME);
-
-                /* Check if the RTL8125 has completed EPHY write */
-                if (!(RTL_R32(tp, EPHYAR) & EPHYAR_Flag))
-                        break;
-        }
-
-        fsleep(R8125_CHANNEL_EXIT_DELAY_TIME);
+    int i;
+    
+    RTL_W32(tp, EPHYAR,
+            (u32)(EPHYAR_Write |
+            (RegAddr & EPHYAR_Reg_Mask_v2) << EPHYAR_Reg_shift |
+            (value & EPHYAR_Data_Mask)));
+    
+    for (i = 0; i < 10; i++) {
+        udelay(100);
+        
+        /* Check if the RTL8125 has completed EPHY write */
+        if (!(RTL_R32(tp, EPHYAR) & EPHYAR_Flag))
+            break;
+    }
+    
+    udelay(20);
 }
 
 u16 rtl8125_ephy_read(struct rtl8125_private *tp, int RegAddr)
 {
-        int i;
-        u16 value = 0xffff;
-
-        RTL_W32(tp, EPHYAR,
-                EPHYAR_Read | (RegAddr & EPHYAR_Reg_Mask_v2) << EPHYAR_Reg_shift);
-
-        for (i = 0; i < R8125_CHANNEL_WAIT_COUNT; i++) {
-                fsleep(R8125_CHANNEL_WAIT_TIME);
-
-                /* Check if the RTL8125 has completed EPHY read */
-                if (RTL_R32(tp, EPHYAR) & EPHYAR_Flag) {
-                        value = (u16) (RTL_R32(tp, EPHYAR) & EPHYAR_Data_Mask);
-                        break;
-                }
+    int i;
+    u16 value = 0xffff;
+    
+    RTL_W32(tp, EPHYAR,
+            (u32)(EPHYAR_Read | (RegAddr & EPHYAR_Reg_Mask_v2) << EPHYAR_Reg_shift));
+    
+    for (i = 0; i < 10; i++) {
+        udelay(100);
+        
+        /* Check if the RTL8125 has completed EPHY read */
+        if (RTL_R32(tp, EPHYAR) & EPHYAR_Flag) {
+            value = (u16) (RTL_R32(tp, EPHYAR) & EPHYAR_Data_Mask);
+            break;
         }
-
-        fsleep(R8125_CHANNEL_EXIT_DELAY_TIME);
-
-        return value;
+    }
+    
+    udelay(20);
+    
+    return value;
 }
 
 static void ClearAndSetPCIePhyBit(struct rtl8125_private *tp, u8 addr, u16 clearmask, u16 setmask)
@@ -4018,73 +4020,72 @@ static void SetPCIePhyBit(struct rtl8125_private *tp, u8 addr, u16 mask)
                               mask);
 }
 
-static u32
+u32
 rtl8125_csi_other_fun_read(struct rtl8125_private *tp,
                            u8 multi_fun_sel_bit,
                            u32 addr)
 {
-        u32 cmd;
-        int i;
-        u32 value = 0xffffffff;
-
-        cmd = CSIAR_Read | CSIAR_ByteEn << CSIAR_ByteEn_shift | (addr & CSIAR_Addr_Mask);
-
-        if (tp->mcfg == CFG_METHOD_DEFAULT)
-                multi_fun_sel_bit = 0;
-
-        if (multi_fun_sel_bit > 7)
-                goto exit;
-
-        cmd |= multi_fun_sel_bit << 16;
-
-        RTL_W32(tp, CSIAR, cmd);
-
-        for (i = 0; i < R8125_CHANNEL_WAIT_COUNT; i++) {
-                fsleep(R8125_CHANNEL_WAIT_TIME);
-
-                /* Check if the RTL8125 has completed CSI read */
-                if (RTL_R32(tp, CSIAR) & CSIAR_Flag) {
-                        value = (u32)RTL_R32(tp, CSIDR);
-                        break;
-                }
+    u32 cmd;
+    int i;
+    u32 value = 0;
+    
+    cmd = CSIAR_Read | CSIAR_ByteEn << CSIAR_ByteEn_shift | (addr & CSIAR_Addr_Mask);
+    
+    if (tp->mcfg == CFG_METHOD_DEFAULT)
+        multi_fun_sel_bit = 0;
+    
+    if (multi_fun_sel_bit > 7)
+        return 0xffffffff;
+    
+    cmd |= multi_fun_sel_bit << 16;
+    
+    RTL_W32(tp, CSIAR, cmd);
+    
+    for (i = 0; i < 10; i++) {
+        udelay(100);
+        
+        /* Check if the RTL8125 has completed CSI read */
+        if (RTL_R32(tp, CSIAR) & CSIAR_Flag) {
+            value = (u32)RTL_R32(tp, CSIDR);
+            break;
         }
-
-        fsleep(R8125_CHANNEL_EXIT_DELAY_TIME);
-
-exit:
-        return value;
+    }
+    
+    udelay(20);
+    
+    return value;
 }
 
-static void
+void
 rtl8125_csi_other_fun_write(struct rtl8125_private *tp,
                             u8 multi_fun_sel_bit,
                             u32 addr,
                             u32 value)
 {
-        u32 cmd;
-        int i;
-
-        RTL_W32(tp, CSIDR, value);
-        cmd = CSIAR_Write | CSIAR_ByteEn << CSIAR_ByteEn_shift | (addr & CSIAR_Addr_Mask);
-        if (tp->mcfg == CFG_METHOD_DEFAULT)
-                multi_fun_sel_bit = 0;
-
-        if (multi_fun_sel_bit > 7)
-                return;
-
-        cmd |= multi_fun_sel_bit << 16;
-
-        RTL_W32(tp, CSIAR, cmd);
-
-        for (i = 0; i < R8125_CHANNEL_WAIT_COUNT; i++) {
-                fsleep(R8125_CHANNEL_WAIT_TIME);
-
-                /* Check if the RTL8125 has completed CSI write */
-                if (!(RTL_R32(tp, CSIAR) & CSIAR_Flag))
-                        break;
-        }
-
-        fsleep(R8125_CHANNEL_EXIT_DELAY_TIME);
+    u32 cmd;
+    int i;
+    
+    RTL_W32(tp, CSIDR, value);
+    cmd = CSIAR_Write | CSIAR_ByteEn << CSIAR_ByteEn_shift | (addr & CSIAR_Addr_Mask);
+    if (tp->mcfg == CFG_METHOD_DEFAULT)
+        multi_fun_sel_bit = 0;
+    
+    if ( multi_fun_sel_bit > 7 )
+        return;
+    
+    cmd |= multi_fun_sel_bit << 16;
+    
+    RTL_W32(tp, CSIAR, cmd);
+    
+    for (i = 0; i < 10; i++) {
+        udelay(100);
+        
+        /* Check if the RTL8125 has completed CSI write */
+        if (!(RTL_R32(tp, CSIAR) & CSIAR_Flag))
+            break;
+    }
+    
+    udelay(20);
 }
 
 static u32
@@ -4168,61 +4169,61 @@ rtl8125_csi_fun0_write_byte(struct rtl8125_private *tp,
 
 u32 rtl8125_eri_read_with_oob_base_address(struct rtl8125_private *tp, int addr, int len, int type, const u32 base_address)
 {
-        int i, val_shift, shift = 0;
-        u32 value1 = 0, value2 = 0, mask;
-        u32 eri_cmd;
-        const u32 transformed_base_address = ((base_address & 0x00FFF000) << 6) | (base_address & 0x000FFF);
-
-        if (len > 4 || len <= 0)
-                return -1;
-
-        while (len > 0) {
-                val_shift = addr % ERIAR_Addr_Align;
-                addr = addr & ~0x3;
-
-                eri_cmd = ERIAR_Read |
-                          transformed_base_address |
-                          type << ERIAR_Type_shift |
-                          ERIAR_ByteEn << ERIAR_ByteEn_shift |
-                          (addr & 0x0FFF);
-                if (addr & 0xF000) {
-                        u32 tmp;
-
-                        tmp = addr & 0xF000;
-                        tmp >>= 12;
-                        eri_cmd |= (tmp << 20) & 0x00F00000;
-                }
-
-                RTL_W32(tp, ERIAR, eri_cmd);
-
-                for (i = 0; i < R8125_CHANNEL_WAIT_COUNT; i++) {
-                        fsleep(R8125_CHANNEL_WAIT_TIME);
-
-                        /* Check if the RTL8125 has completed ERI read */
-                        if (RTL_R32(tp, ERIAR) & ERIAR_Flag)
-                                break;
-                }
-
-                if (len == 1)       mask = (0xFF << (val_shift * 8)) & 0xFFFFFFFF;
-                else if (len == 2)  mask = (0xFFFF << (val_shift * 8)) & 0xFFFFFFFF;
-                else if (len == 3)  mask = (0xFFFFFF << (val_shift * 8)) & 0xFFFFFFFF;
-                else            mask = (0xFFFFFFFF << (val_shift * 8)) & 0xFFFFFFFF;
-
-                value1 = RTL_R32(tp, ERIDR) & mask;
-                value2 |= (value1 >> val_shift * 8) << shift * 8;
-
-                if (len <= 4 - val_shift) {
-                        len = 0;
-                } else {
-                        len -= (4 - val_shift);
-                        shift = 4 - val_shift;
-                        addr += 4;
-                }
+    int i, val_shift, shift = 0;
+    u32 value1 = 0, value2 = 0, mask;
+    u32 eri_cmd;
+    const u32 transformed_base_address = ((base_address & 0x00FFF000) << 6) | (base_address & 0x000FFF);
+    
+    if (len > 4 || len <= 0)
+        return -1;
+    
+    while (len > 0) {
+        val_shift = addr % ERIAR_Addr_Align;
+        addr = addr & ~0x3;
+        
+        eri_cmd = ERIAR_Read |
+        transformed_base_address |
+        type << ERIAR_Type_shift |
+        ERIAR_ByteEn << ERIAR_ByteEn_shift |
+        (addr & 0x0FFF);
+        if (addr & 0xF000) {
+            u32 tmp;
+            
+            tmp = addr & 0xF000;
+            tmp >>= 12;
+            eri_cmd |= (tmp << 20) & 0x00F00000;
         }
-
-        fsleep(R8125_CHANNEL_EXIT_DELAY_TIME);
-
-        return value2;
+        
+        RTL_W32(tp, ERIAR, eri_cmd);
+        
+        for (i = 0; i < 10; i++) {
+            udelay(100);
+            
+            /* Check if the RTL8125 has completed ERI read */
+            if (RTL_R32(tp, ERIAR) & ERIAR_Flag)
+                break;
+        }
+        
+        if (len == 1)       mask = (0xFF << (val_shift * 8)) & 0xFFFFFFFF;
+        else if (len == 2)  mask = (0xFFFF << (val_shift * 8)) & 0xFFFFFFFF;
+        else if (len == 3)  mask = (0xFFFFFF << (val_shift * 8)) & 0xFFFFFFFF;
+        else            mask = (0xFFFFFFFF << (val_shift * 8)) & 0xFFFFFFFF;
+        
+        value1 = RTL_R32(tp, ERIDR) & mask;
+        value2 |= (value1 >> val_shift * 8) << shift * 8;
+        
+        if (len <= 4 - val_shift) {
+            len = 0;
+        } else {
+            len -= (4 - val_shift);
+            shift = 4 - val_shift;
+            addr += 4;
+        }
+    }
+    
+    udelay(20);
+    
+    return value2;
 }
 
 u32 rtl8125_eri_read(struct rtl8125_private *tp, int addr, int len, int type)
@@ -4232,63 +4233,63 @@ u32 rtl8125_eri_read(struct rtl8125_private *tp, int addr, int len, int type)
 
 int rtl8125_eri_write_with_oob_base_address(struct rtl8125_private *tp, int addr, int len, u32 value, int type, const u32 base_address)
 {
-        int i, val_shift, shift = 0;
-        u32 value1 = 0, mask;
-        u32 eri_cmd;
-        const u32 transformed_base_address = ((base_address & 0x00FFF000) << 6) | (base_address & 0x000FFF);
-
-        if (len > 4 || len <= 0)
-                return -1;
-
-        while (len > 0) {
-                val_shift = addr % ERIAR_Addr_Align;
-                addr = addr & ~0x3;
-
-                if (len == 1)       mask = (0xFF << (val_shift * 8)) & 0xFFFFFFFF;
-                else if (len == 2)  mask = (0xFFFF << (val_shift * 8)) & 0xFFFFFFFF;
-                else if (len == 3)  mask = (0xFFFFFF << (val_shift * 8)) & 0xFFFFFFFF;
-                else            mask = (0xFFFFFFFF << (val_shift * 8)) & 0xFFFFFFFF;
-
-                value1 = rtl8125_eri_read_with_oob_base_address(tp, addr, 4, type, base_address) & ~mask;
-                value1 |= ((value << val_shift * 8) >> shift * 8);
-
-                RTL_W32(tp, ERIDR, value1);
-
-                eri_cmd = ERIAR_Write |
-                          transformed_base_address |
-                          type << ERIAR_Type_shift |
-                          ERIAR_ByteEn << ERIAR_ByteEn_shift |
-                          (addr & 0x0FFF);
-                if (addr & 0xF000) {
-                        u32 tmp;
-
-                        tmp = addr & 0xF000;
-                        tmp >>= 12;
-                        eri_cmd |= (tmp << 20) & 0x00F00000;
-                }
-
-                RTL_W32(tp, ERIAR, eri_cmd);
-
-                for (i = 0; i < R8125_CHANNEL_WAIT_COUNT; i++) {
-                        fsleep(R8125_CHANNEL_WAIT_TIME);
-
-                        /* Check if the RTL8125 has completed ERI write */
-                        if (!(RTL_R32(tp, ERIAR) & ERIAR_Flag))
-                                break;
-                }
-
-                if (len <= 4 - val_shift) {
-                        len = 0;
-                } else {
-                        len -= (4 - val_shift);
-                        shift = 4 - val_shift;
-                        addr += 4;
-                }
+    int i, val_shift, shift = 0;
+    u32 value1 = 0, mask;
+    u32 eri_cmd;
+    const u32 transformed_base_address = ((base_address & 0x00FFF000) << 6) | (base_address & 0x000FFF);
+    
+    if (len > 4 || len <= 0)
+        return -1;
+    
+    while (len > 0) {
+        val_shift = addr % ERIAR_Addr_Align;
+        addr = addr & ~0x3;
+        
+        if (len == 1)       mask = (0xFF << (val_shift * 8)) & 0xFFFFFFFF;
+        else if (len == 2)  mask = (0xFFFF << (val_shift * 8)) & 0xFFFFFFFF;
+        else if (len == 3)  mask = (0xFFFFFF << (val_shift * 8)) & 0xFFFFFFFF;
+        else            mask = (0xFFFFFFFF << (val_shift * 8)) & 0xFFFFFFFF;
+        
+        value1 = rtl8125_eri_read_with_oob_base_address(tp, addr, 4, type, base_address) & ~mask;
+        value1 |= ((value << val_shift * 8) >> shift * 8);
+        
+        RTL_W32(tp, ERIDR, value1);
+        
+        eri_cmd = ERIAR_Write |
+        transformed_base_address |
+        type << ERIAR_Type_shift |
+        ERIAR_ByteEn << ERIAR_ByteEn_shift |
+        (addr & 0x0FFF);
+        if (addr & 0xF000) {
+            u32 tmp;
+            
+            tmp = addr & 0xF000;
+            tmp >>= 12;
+            eri_cmd |= (tmp << 20) & 0x00F00000;
         }
-
-        fsleep(R8125_CHANNEL_EXIT_DELAY_TIME);
-
-        return 0;
+        
+        RTL_W32(tp, ERIAR, eri_cmd);
+        
+        for (i = 0; i < 10; i++) {
+            udelay(100);
+            
+            /* Check if the RTL8125 has completed ERI write */
+            if (!(RTL_R32(tp, ERIAR) & ERIAR_Flag))
+                break;
+        }
+        
+        if (len <= 4 - val_shift) {
+            len = 0;
+        } else {
+            len -= (4 - val_shift);
+            shift = 4 - val_shift;
+            addr += 4;
+        }
+    }
+    
+    udelay(20);
+    
+    return 0;
 }
 
 int rtl8125_eri_write(struct rtl8125_private *tp, int addr, int len, u32 value, int type)
@@ -4404,31 +4405,34 @@ rtl8125_clear_stop_all_request(struct net_device *dev)
 void
 rtl8125_wait_txrx_fifo_empty(struct net_device *dev)
 {
-        struct rtl8125_private *tp = netdev_priv(dev);
-        int i;
-
-        /* Txfifo_empty require StopReq been set */
-        for (i = 0; i < 3000; i++) {
-                fsleep(50);
-                if ((RTL_R8(tp, MCUCmd_reg) & (Txfifo_empty | Rxfifo_empty)) == (Txfifo_empty | Rxfifo_empty))
-                        break;
-        }
-
-        switch (tp->mcfg) {
+    struct rtl8125_private *tp = netdev_priv(dev);
+    int i;
+    
+    switch (tp->mcfg) {
+        case CFG_METHOD_2:
+        case CFG_METHOD_3:
         case CFG_METHOD_4:
         case CFG_METHOD_5:
-        case CFG_METHOD_7:
-        case CFG_METHOD_8:
-        case CFG_METHOD_9:
-        case CFG_METHOD_10:
-        case CFG_METHOD_11:
-                for (i = 0; i < 3000; i++) {
-                        fsleep(50);
-                        if ((RTL_R16(tp, IntrMitigate) & (BIT_0 | BIT_1 | BIT_8)) == (BIT_0 | BIT_1 | BIT_8))
-                                break;
-                }
-                break;
-        }
+            for (i = 0; i < 3000; i++) {
+                udelay(50);
+                if ((RTL_R8(tp, MCUCmd_reg) & (Txfifo_empty | Rxfifo_empty)) == (Txfifo_empty | Rxfifo_empty))
+                    break;
+                
+            }
+            break;
+    }
+    
+    switch (tp->mcfg) {
+        case CFG_METHOD_4:
+        case CFG_METHOD_5:
+            for (i = 0; i < 3000; i++) {
+                udelay(50);
+                if ((RTL_R16(tp, IntrMitigate) & (BIT_0 | BIT_1 | BIT_8)) == (BIT_0 | BIT_1 | BIT_8))
+                    break;
+                
+            }
+            break;
+    }
 }
 
 #if DISABLED_CODE
