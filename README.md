@@ -27,3 +27,7 @@ A Lilu plugin to inject driver for Realtek RTL8125 2.5Gbit Ethernet cards.
 * [mieze](https://github.com/Mieze/RTL8111_driver_for_OS_X)'s RTL8111_driver_for_OS_X
 * [Realtek](https://github.com/notpeelz/r8125)'s r8125 Linux Driver
 * [一个憨憨的电脑小白](https://github.com/fix221) helped tested process.
+
+## Community
+* [laobamac&win10Q的黑苹果交流群①](https://qm.qq.com/q/fCpQhYKwta) 此群已满员，请进二群
+* [laobamac&win10Q的黑苹果交流群②](https://qm.qq.com/q/DA1XSDUaYw) 此群未满，可加入
