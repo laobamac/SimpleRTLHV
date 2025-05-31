@@ -51,7 +51,6 @@
 		D38D86702443B66200D94935 /* ethertool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ethertool.h; sourceTree = "<group>"; };
 		D38D86712443B66300D94935 /* linux.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = linux.h; sourceTree = "<group>"; };
 		D38D86722443B66300D94935 /* mii.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mii.h; sourceTree = "<group>"; };
-		D38D86742443B66300D94935 /* gpl.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = gpl.txt; sourceTree = "<group>"; };
 		D38D86752443B66300D94935 /* if_ether.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = if_ether.h; sourceTree = "<group>"; };
 		D38F5FA02BABCA34005D5D2A /* SimpleRTLSetup.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SimpleRTLSetup.cpp; sourceTree = "<group>"; };
 		D38F5FA72BABD01F005D5D2A /* libkmod.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libkmod.a; sourceTree = "<group>"; };
@@ -1334,7 +1333,6 @@
 				D38D86712443B66300D94935 /* linux.h */,
 				D38D86722443B66300D94935 /* mii.h */,
 				D38D86682443AF9100D94935 /* SimpleRTLHV-Prefix.pch */,
-				D38D86742443B66300D94935 /* gpl.txt */,
 				D38D86622443ACB600D94935 /* Info.plist */,
 			);
 			path = SimpleRTLHV;
