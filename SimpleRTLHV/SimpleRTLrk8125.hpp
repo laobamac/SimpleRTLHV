@@ -682,7 +682,7 @@ This is free software, and you are welcome to redistribute it under certain cond
 #endif
 
 #define Reserved2_data  7
-#define RX_DMA_BURST    7   /* Maximum PCI burst, '6' is 1024 */s
+#define RX_DMA_BURST    7   /* Maximum PCI burst, '6' is 1024 */
 #define RX_DMA_BURST_unlimited  7   /* Maximum PCI burst, '7' is unlimited */
 #define RX_DMA_BURST_512    5
 #define RX_DMA_BURST_256    4
@@ -2685,6 +2685,8 @@ struct rtl8125_private {
         u8 HwSuppCheckPhyDisableModeVer;
 
         u8 random_mac;
+    
+        u8 HwSuppGigaForceMode;
 
         u16 phy_reg_aner;
         u16 phy_reg_anlpar;
@@ -2809,9 +2811,9 @@ struct rtl8125_private {
         MP_KCP_INFO MpKCPInfo;
         //Realwow--------------
 #endif //ENABLE_REALWOW_SUPPORT
-    u32 eee_adv_t;
-    u8 eee_enabled;
-    
+        u32 eee_adv_t;
+        u8 eee_enabled;
+
         struct ethtool_keee eee;
 
 #ifdef ENABLE_R8125_PROCFS
@@ -3033,6 +3035,67 @@ void rtl8125_dash2_enable_tx(struct rtl8125_private *tp);
 void rtl8125_dash2_disable_rx(struct rtl8125_private *tp);
 void rtl8125_dash2_enable_rx(struct rtl8125_private *tp);
 void rtl8125_hw_disable_mac_mcu_bps(struct net_device *dev);
+
+void rtl8125_disable_ocp_phy_power_saving(struct net_device *dev);
+
+int rtl8125_enable_eee_plus(struct rtl8125_private *tp);
+int rtl8125_disable_eee_plus(struct rtl8125_private *tp);
+int rtl8125_enable_eee(struct rtl8125_private *tp);
+int rtl8125_disable_eee(struct rtl8125_private *tp);
+
+void rtl8125_nic_reset(struct net_device *dev);
+void rtl8125_get_mac_version(struct rtl8125_private *tp);
+void rtl8125_xmii_reset_enable(struct net_device *dev);
+unsigned int rtl8125_xmii_reset_pending(struct net_device *dev);
+void rtl8125_get_bios_setting(struct net_device *dev);
+u32 rtl8125_get_hw_wol(struct net_device *dev);
+void rtl8125_set_hw_wol(struct net_device *dev, u32 wolopts);
+void rtl8125_hw_init(struct net_device *dev);
+int rtl8125_get_mac_address(struct net_device *dev);
+void rtl8125_phy_power_down(struct net_device *dev);
+void rtl8125_phy_restart_nway(struct net_device *dev);
+void rtl8125_phy_setup_force_mode(struct net_device *dev, u32 speed, u8 duplex);
+void rtl8125_disable_rxdvgate(struct net_device *dev);
+void rtl8125_powerup_pll(struct net_device *dev);
+void rtl8125_hw_ephy_config(struct net_device *dev);
+void rtl8125_hw_phy_config(struct net_device *dev);
+void rtl8125_hw_clear_timer_int(struct net_device *dev);
+void rtl8125_hw_clear_int_miti(struct net_device *dev);
+void rtl8125_clear_phy_ups_reg(struct net_device *dev);
+int rtl8125_is_ups_resume(struct net_device *dev);
+void rtl8125_clear_ups_resume_bit(struct net_device *dev);
+void rtl8125_wait_phy_ups_resume(struct net_device *dev, u16 PhyState);
+
+u32 rtl8125_csi_other_fun_read(struct rtl8125_private *tp, u8 multi_fun_sel_bit, u32 addr);
+void rtl8125_csi_other_fun_write(struct rtl8125_private *tp, u8 multi_fun_sel_bit, u32 addr, u32 value);
+
+void rtl8125_eeprom_type(struct rtl8125_private *tp);
+
+void set_offset70F(struct rtl8125_private *tp, u8 setting);
+void rtl8125_issue_offset_99_event(struct rtl8125_private *tp);
+
+void rtl8125_init_pci_offset_180(struct rtl8125_private *tp);
+void rtl8125_disable_pci_offset_180(struct rtl8125_private *tp);
+
+void ClearMcuAccessRegBit( struct rtl8125_private *tp, u16 addr, u16 mask);
+void SetMcuAccessRegBit(struct rtl8125_private *tp, u16 addr, u16 mask);
+void ClearEthPhyOcpBit(struct rtl8125_private *tp, u16 addr, u16 mask);
+void SetEthPhyOcpBit(struct rtl8125_private *tp,  u16 addr, u16 mask);
+void ClearAndSetEthPhyOcpBit(struct rtl8125_private *tp, u16 addr, u16 clearmask, u16 setmask);
+
+u32 mdio_direct_read_phy_ocp(struct rtl8125_private *tp, u16 RegAddr);
+void mdio_real_direct_write_phy_ocp(struct rtl8125_private *tp, u16 RegAddr, u16 value);
+void mdio_direct_write_phy_ocp(struct rtl8125_private *tp, u16 RegAddr, u16 value);
+
+void rtl8125_enable_exit_l1_mask(struct rtl8125_private *tp);
+void rtl8125_disable_exit_l1_mask(struct rtl8125_private *tp);
+void rtl8125_wait_ll_share_fifo_ready(struct net_device *dev);
+
+void rtl8125_init_hw_phy_mcu(struct net_device *dev);
+void rtl8125_set_hw_phy_before_init_phy_mcu(struct net_device *dev);
+void rtl8125_enable_phy_aldps(struct rtl8125_private *tp);
+bool rtl8125_set_phy_mcu_patch_request(struct rtl8125_private *tp);
+bool rtl8125_clear_phy_mcu_patch_request(struct rtl8125_private *tp);
 
 #if DISABLED_CODE
 

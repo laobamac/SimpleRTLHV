@@ -272,7 +272,7 @@ bool SimpleRTL::initRTL8125()
     }
     tp->org_pci_offset_80 = pciDevice->configRead8(0x80);
     tp->org_pci_offset_81 = pciDevice->configRead8(0x81);
-    tp->use_timer_interrrupt = true;
+    tp->use_timer_interrupt = true;
 /*
     switch (tp->mcfg) {
         case CFG_METHOD_2:
