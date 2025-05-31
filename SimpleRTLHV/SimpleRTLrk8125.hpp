@@ -1444,6 +1444,7 @@ enum RTL8125_registers {
         MAC0            = 0x00,     /* Ethernet hardware address. */
         MAC4            = 0x04,
         MAR0            = 0x08,     /* Multicast filter. */
+        MAR1            = 0x0C,        /* Multicast filter. */
         CounterAddrLow      = 0x10,
         CounterAddrHigh     = 0x14,
         CustomLED       = 0x18,
@@ -2808,7 +2809,9 @@ struct rtl8125_private {
         MP_KCP_INFO MpKCPInfo;
         //Realwow--------------
 #endif //ENABLE_REALWOW_SUPPORT
-
+    u32 eee_adv_t;
+    u8 eee_enabled;
+    
         struct ethtool_keee eee;
 
 #ifdef ENABLE_R8125_PROCFS
@@ -2862,6 +2865,11 @@ struct rtl8125_private {
         u16 TcamValidReg;
         u16 TcamMaAddrcOffset;
         u16 TcamVlanTagOffset;
+    
+    UInt32 hwoptimize;
+    UInt32 s0MagicPacket;
+    UInt32 configEEE;
+    UInt32 configASPM;
 };
 
 #if DISABLED_CODE

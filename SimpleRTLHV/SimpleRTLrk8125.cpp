@@ -134,16 +134,12 @@ static const struct {
         [CFG_METHOD_DEFAULT] = {"Unknown",                  },
 };
 
+#endif /* DISABLED_CODE */
+
 #define _R(NAME,MAC,RCR,MASK,JumFrameSz) \
     { .name = NAME, .mcfg = MAC, .RCR_Cfg = RCR, .RxConfigMask = MASK, .jumbo_frame_sz = JumFrameSz }
 
-static const struct {
-        const char *name;
-        u8 mcfg;
-        u32 RCR_Cfg;
-        u32 RxConfigMask;   /* Clears the bits supported by this chip */
-        u32 jumbo_frame_sz;
-} rtl_chip_info[] = {
+const struct RTLChipInfo rtl_chip_info[] = {
         _R("RTL8125A",
         CFG_METHOD_2,
         Rx_Fetch_Number_8 | EnableInnerVlan | EnableOuterVlan | (RX_DMA_BURST_256 << RxCfgDMAShift),
@@ -212,6 +208,7 @@ static const struct {
 };
 #undef _R
 
+#if DISABLED_CODE
 
 #ifndef PCI_VENDOR_ID_DLINK
 #define PCI_VENDOR_ID_DLINK 0x1186
@@ -412,11 +409,22 @@ static void rtl8125_clear_and_set_eth_phy_ocp_bit(struct rtl8125_private *tp, u1
 static void rtl8125_clear_eth_phy_ocp_bit(struct rtl8125_private *tp, u16 addr, u16 mask);
 static void rtl8125_set_eth_phy_ocp_bit(struct rtl8125_private *tp,  u16 addr, u16 mask);
 static u16 rtl8125_get_hw_phy_mcu_code_ver(struct rtl8125_private *tp);
+
+#endif  /* DISABLED_CODE */
+
 static void rtl8125_phy_power_up(struct net_device *dev);
+
+#if DISABLED_CODE
+
 static void rtl8125_phy_power_down(struct net_device *dev);
 static int rtl8125_set_speed(struct net_device *dev, u8 autoneg, u32 speed, u8 duplex, u64 adv);
+
+#endif  /* DISABLED_CODE */
+
 static bool rtl8125_set_phy_mcu_patch_request(struct rtl8125_private *tp);
 static bool rtl8125_clear_phy_mcu_patch_request(struct rtl8125_private *tp);
+
+#if DISABLED_CODE
 
 #ifdef CONFIG_R8125_NAPI
 static int rtl8125_poll(napi_ptr napi, napi_budget budget);
@@ -476,6 +484,8 @@ bool ethtool_convert_link_mode_to_legacy_u32(u32 *legacy_u32,
         return retval;
 }
 #endif
+
+#endif  /* DISABLED_CODE */
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3,3,0)
 

@@ -1,10 +1,11 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
 /*
 ################################################################################
 #
-# r8125 is the Linux device driver released for Realtek 2.5Gigabit Ethernet
+# r8125 is the Linux device driver released for Realtek 2.5 Gigabit Ethernet
 # controllers with PCI-Express interface.
 #
-# Copyright(c) 2020 Realtek Semiconductor Corp. All rights reserved.
+# Copyright(c) 2024 Realtek Semiconductor Corp. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -69,48 +70,48 @@ struct rtl_dash_ip_mac {
 };
 
 struct rtl_dash_ioctl_struct {
-        __u32	cmd;
-        __u32	offset;
-        __u32	len;
+        __u32    cmd;
+        __u32    offset;
+        __u32    len;
         union {
-                __u32	data;
+                __u32    data;
                 void *data_buffer;
         };
 };
 
 struct settings_ipv4 {
-        __u32	IPv4addr;
-        __u32	IPv4mask;
-        __u32	IPv4Gateway;
+        __u32    IPv4addr;
+        __u32    IPv4mask;
+        __u32    IPv4Gateway;
 };
 
 struct settings_ipv6 {
-        __u32	reserved;
-        __u32	prefixLen;
-        __u16	IPv6addr[8];
-        __u16	IPv6Gateway[8];
+        __u32    reserved;
+        __u32    prefixLen;
+        __u16    IPv6addr[8];
+        __u16    IPv6Gateway[8];
 };
 
 struct settings_ext_snmp {
-        __u16	index;
-        __u16	oid_get_len;
-        __u8	oid_for_get[24];
-        __u8	reserved0[26];
-        __u16	value_len;
-        __u8	value[256];
-        __u8	supported;
-        __u8	reserved1[27];
+        __u16    index;
+        __u16    oid_get_len;
+        __u8    oid_for_get[24];
+        __u8    reserved0[26];
+        __u16    value_len;
+        __u8    value[256];
+        __u8    supported;
+        __u8    reserved1[27];
 };
 
 struct wakeup_pattern {
-        __u8	index;
-        __u8	valid;
-        __u8	start;
-        __u8	length;
-        __u8	name[36];
-        __u8	mask[16];
-        __u8	pattern[128];
-        __u32	reserved[2];
+        __u8    index;
+        __u8    valid;
+        __u8    start;
+        __u8    length;
+        __u8    name[36];
+        __u8    mask[16];
+        __u8    pattern[128];
+        __u32    reserved[2];
 };
 
 typedef struct _RX_DASH_FROM_FW_DESC {
@@ -161,6 +162,7 @@ RX_DASH_BUFFER_TYPE_2, *PRX_DASH_BUFFER_TYPE_2;
 #define OCP_REG_CR (0x36)
 #define OCP_REG_DMEMSTA (0x38)
 #define OCP_REG_GPHYAR (0x60)
+#define OCP_REG_FIRMWARE_MAJOR_VERSION (0x120)
 
 
 #define OCP_REG_CONFIG0_DASHEN           BIT_15
@@ -172,10 +174,16 @@ RX_DASH_BUFFER_TYPE_2, *PRX_DASH_BUFFER_TYPE_2;
 #define OCP_REG_CONFIG0_DRV_WAIT_OOB     BIT_8
 #define OCP_REG_CONFIG0_TLSEN            BIT_7
 
-#define HW_DASH_SUPPORT_DASH(_M)        ((_M)->HwSuppDashVer > 0 )
-#define HW_DASH_SUPPORT_TYPE_1(_M)        ((_M)->HwSuppDashVer == 1 )
-#define HW_DASH_SUPPORT_TYPE_2(_M)        ((_M)->HwSuppDashVer == 2 )
-#define HW_DASH_SUPPORT_TYPE_3(_M)        ((_M)->HwSuppDashVer == 3 )
+#define HW_DASH_SUPPORT_DASH(_M)        ((_M)->HwSuppDashVer > 0)
+#define HW_DASH_SUPPORT_TYPE_1(_M)      ((_M)->HwSuppDashVer == 1)
+#define HW_DASH_SUPPORT_TYPE_2(_M)      ((_M)->HwSuppDashVer == 2)
+#define HW_DASH_SUPPORT_TYPE_3(_M)      ((_M)->HwSuppDashVer == 3)
+#define HW_DASH_SUPPORT_TYPE_4(_M)      ((_M)->HwSuppDashVer == 4)
+#define HW_DASH_SUPPORT_CMAC(_M)        (HW_DASH_SUPPORT_TYPE_2(_M) || HW_DASH_SUPPORT_TYPE_3(_M))
+#define HW_DASH_SUPPORT_IPC2(_M)        (HW_DASH_SUPPORT_TYPE_4(_M))
+#define HW_DASH_SUPPORT_GET_FIRMWARE_VERSION(_M) (HW_DASH_SUPPORT_TYPE_2(_M) || \
+                                                  HW_DASH_SUPPORT_TYPE_3(_M) || \
+                                                  HW_DASH_SUPPORT_TYPE_4(_M))
 
 #define RECV_FROM_FW_BUF_SIZE (1520)
 #define SEND_TO_FW_BUF_SIZE (1520)
