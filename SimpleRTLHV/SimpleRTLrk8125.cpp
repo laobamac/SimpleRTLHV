@@ -4763,6 +4763,8 @@ rtl8125_hw_set_timer_int_8125(struct rtl8125_private *tp,
         }
 }
 
+#if DISABLED_CODE
+
 void
 rtl8125_hw_reset(struct net_device *dev)
 {
@@ -4778,6 +4780,8 @@ rtl8125_hw_reset(struct net_device *dev)
         rtl8125_nic_reset(dev);
 }
 
+#endif /* DISABLED_CODE */
+
 static unsigned int
 rtl8125_xmii_reset_pending(struct net_device *dev)
 {
@@ -4789,6 +4793,8 @@ rtl8125_xmii_reset_pending(struct net_device *dev)
 
         return retval;
 }
+
+#if DISABLED_CODE
 
 static unsigned int
 _rtl8125_xmii_link_ok(struct net_device *dev)
@@ -4837,6 +4843,8 @@ rtl8125_wait_phy_reset_complete(struct rtl8125_private *tp)
         return -1;
 }
 
+#endif /* DISABLED_CODE */
+
 static void
 rtl8125_xmii_reset_enable(struct net_device *dev)
 {
@@ -4861,6 +4869,8 @@ rtl8125_xmii_reset_enable(struct net_device *dev)
         if (netif_msg_link(tp))
                 printk(KERN_ERR "%s: PHY reset failed.\n", dev->name);
 }
+
+#if DISABLED_CODE
 
 void
 rtl8125_init_ring_indexes(struct rtl8125_private *tp)
@@ -4905,11 +4915,15 @@ rtl8125_init_ring_indexes(struct rtl8125_private *tp)
 #endif
 }
 
+#endif /* DISABLED_CODE */
+
 static void
 rtl8125_issue_offset_99_event(struct rtl8125_private *tp)
 {
         rtl8125_mac_ocp_write(tp, 0xE09A,  rtl8125_mac_ocp_read(tp, 0xE09A) | BIT_0);
 }
+
+#if DISABLED_CODE
 
 #ifdef ENABLE_DASH_SUPPORT
 static void
@@ -4927,6 +4941,8 @@ NICChkTypeEnableDashInterrupt(struct rtl8125_private *tp)
         }
 }
 #endif
+
+#endif /* DISABLED_CODE */
 
 static int rtl8125_enable_eee_plus(struct rtl8125_private *tp)
 {
@@ -4971,6 +4987,8 @@ rtl8125_set_pfm_patch(struct rtl8125_private *tp, bool enable)
 exit:
         return;
 }
+
+#if DISABLED_CODE
 
 static void
 rtl8125_link_on_patch(struct net_device *dev)
@@ -5182,6 +5200,8 @@ rtl8125_set_link_option(struct rtl8125_private *tp,
         tp->fcpause = fc;
 }
 
+#endif /* DISABLED_CODE */
+
 /*
 static void
 rtl8125_enable_ocp_phy_power_saving(struct net_device *dev)
@@ -5235,6 +5255,8 @@ rtl8125_wait_ll_share_fifo_ready(struct net_device *dev)
         }
 }
 
+#if DISABLED_CODE
+
 static void
 rtl8125_disable_pci_offset_99(struct rtl8125_private *tp)
 {
@@ -5282,6 +5304,8 @@ rtl8125_init_pci_offset_99(struct rtl8125_private *tp)
         rtl8125_enable_pci_offset_99(tp);
 }
 
+#endif  /* DISABLED_CODE */
+
 static void
 rtl8125_disable_pci_offset_180(struct rtl8125_private *tp)
 {
@@ -5317,6 +5341,8 @@ rtl8125_init_pci_offset_180(struct rtl8125_private *tp)
         rtl8125_enable_pci_offset_180(tp);
 }
 
+#if DISABLED_CODE
+
 static void
 rtl8125_set_pci_99_exit_driver_para(struct net_device *dev)
 {
@@ -5326,6 +5352,8 @@ rtl8125_set_pci_99_exit_driver_para(struct net_device *dev)
                 rtl8125_issue_offset_99_event(tp);
         rtl8125_disable_pci_offset_99(tp);
 }
+
+#endif  /* DISABLED_CODE */
 
 static void
 rtl8125_enable_cfg9346_write(struct rtl8125_private *tp)
@@ -5407,6 +5435,8 @@ rtl8125_enable_aspm_clkreq_lock(struct rtl8125_private *tp, bool enable)
                 rtl8125_disable_cfg9346_write(tp);
 }
 
+#if DISABLED_CODE
+
 static void
 rtl8125_hw_d3_para(struct net_device *dev)
 {
@@ -5435,6 +5465,8 @@ rtl8125_hw_d3_para(struct net_device *dev)
 
         rtl8125_disable_extend_tally_couter(tp);
 }
+
+#endif  /* DISABLED_CODE */
 
 static void
 rtl8125_enable_magic_packet(struct net_device *dev)
@@ -5525,6 +5557,8 @@ out:
         return wol_opts;
 }
 
+#if DISABLED_CODE
+
 static void
 rtl8125_enable_d0_speedup(struct rtl8125_private *tp)
 {
@@ -5562,6 +5596,8 @@ rtl8125_enable_d0_speedup(struct rtl8125_private *tp)
 
         RTL_W8(tp, 0xD0, RTL_R8(tp, 0xD0) | BIT_3);
 }
+
+#endif  /* DISABLED_CODE */
 
 static void
 rtl8125_disable_d0_speedup(struct rtl8125_private *tp)
@@ -5660,6 +5696,8 @@ rtl8125_phy_setup_force_mode(struct net_device *dev, u32 speed, u8 duplex)
         rtl8125_mdio_write(tp, 0x1F, 0x0000);
         rtl8125_mdio_write(tp, MII_BMCR, bmcr_true_force);
 }
+
+#if DISABLED_CODE
 
 static void
 rtl8125_set_pci_pme(struct rtl8125_private *tp, int set)
@@ -5873,6 +5911,8 @@ rtl8125_powerdown_pll(struct net_device *dev, u8 from_suspend)
 
         RTL_W8(tp, 0xF2, RTL_R8(tp, 0xF2) & ~BIT_6);
 }
+
+#endif  /* DISABLED_CODE */
 
 static void rtl8125_powerup_pll(struct net_device *dev)
 {
