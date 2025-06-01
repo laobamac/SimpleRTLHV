@@ -1288,7 +1288,10 @@ void SimpleRTL::checkLinkStatus()
         }
 
         if ((tp->mcfg == CFG_METHOD_2 || tp->mcfg == CFG_METHOD_3 ||
-             tp->mcfg == CFG_METHOD_4 || tp->mcfg == CFG_METHOD_5) &&
+             tp->mcfg == CFG_METHOD_4 || tp->mcfg == CFG_METHOD_5 ||
+             tp->mcfg == CFG_METHOD_7 || tp->mcfg == CFG_METHOD_8 ||
+             tp->mcfg == CFG_METHOD_9 || tp->mcfg == CFG_METHOD_10 ||
+             tp->mcfg == CFG_METHOD_11) &&
             (ReadReg16(PHYstatus) & _10bps))
                 rtl8125_enable_eee_plus(tp);
 
@@ -1303,7 +1306,12 @@ void SimpleRTL::checkLinkStatus()
         if (tp->mcfg == CFG_METHOD_2 ||
             tp->mcfg == CFG_METHOD_3 ||
             tp->mcfg == CFG_METHOD_4 ||
-            tp->mcfg == CFG_METHOD_5)
+            tp->mcfg == CFG_METHOD_5 ||
+            tp->mcfg == CFG_METHOD_7 ||
+            tp->mcfg == CFG_METHOD_8 ||
+            tp->mcfg == CFG_METHOD_9 ||
+            tp->mcfg == CFG_METHOD_10 ||
+            tp->mcfg == CFG_METHOD_11)
                 rtl8125_disable_eee_plus(tp);
 
         /* Stop watchdog and statistics updates. */

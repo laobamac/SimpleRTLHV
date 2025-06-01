@@ -348,6 +348,11 @@ private:
     void configPhyHardware8125a2();
     void configPhyHardware8125b1();
     void configPhyHardware8125b2();
+    void configPhyHardware8125bp1();
+    void configPhyHardware8125bp2();
+    void configPhyHardware8125d1();
+    void configPhyHardware8125d2();
+    
 
     /* Descriptor related methods. */
     inline void getChecksumResult(mbuf_t m, UInt32 status1, UInt32 status2);
