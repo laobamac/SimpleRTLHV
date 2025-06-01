@@ -1,5 +1,6 @@
 # SimpleRTLHV
-
+[简体中文](README_CN.md)
+---------
 A Lilu plugin to inject driver for Realtek RTL8125 2.5Gbit Ethernet cards.
 
 ## Features
