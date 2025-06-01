@@ -11,7 +11,6 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        # 修正为对象数组格式
         config: 
           - name: Debug
             sign: false
@@ -43,7 +42,7 @@ jobs:
         echo "SCHEME=$SCHEME" >> $GITHUB_ENV
         echo "Using scheme: $SCHEME"
 
-    # 签名设置仅对release事件和Release配置生效
+    # 签名设置
     - name: Setup signing
       if: ${{ github.event_name == 'release' && matrix.config.sign == 'true' }}
       run: |
@@ -143,7 +142,7 @@ jobs:
         echo "ZIP_PATH=$(pwd)/$ZIP_NAME" >> $GITHUB_ENV
         ls -lh "$ZIP_NAME"
 
-    # 签名验证仅对release事件和Release配置生效
+    # 签名验证
     - name: Verify signature
       if: ${{ github.event_name == 'release' && matrix.config.sign == 'true' }}
       run: |
@@ -156,8 +155,9 @@ jobs:
         codesign -vvv --strict "$KEXT_PATH" || (echo "::error::Code signature verification failed"; exit 1)
         echo "✅ Code signature verified"
 
+    # 使用 upload-artifact v4 版本修复错误
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ env.PROJECT_NAME }}-${{ env.VERSION }}-${{ matrix.config.name }}
         path: ${{ env.ZIP_PATH }}
